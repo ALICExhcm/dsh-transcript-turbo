@@ -25,13 +25,14 @@ completely.
    "working…" signal stays visible at a fraction of the cost.
 3. **Shimmer freezing.** Tool-row shimmer sweeps (`translate` keyframes) keep running at
    frame rate even when scrolled offscreen. They become a static highlight.
-4. **Self-check (v0.2.0).** Three seconds after load the module verifies its own rules
-   actually matched (`cv:auto` on a real flow item) and reports one console line —
-   `info` when healthy, `warn` when an app update has renamed the classes the selectors
-   rely on. The same object is kept on `window.__dshTranscriptTurbo` for probing.
-5. **Configuration switches (v0.5.0).** The bundle's row in Plugin Manager carries a
-   configuration form with three volatile switches — they apply instantly, without
-   restarting anything: `containment`, `spinnerQuiet`, `shimmerFreeze`.
+4. **Self-check.** Three seconds after load the module verifies its own rules actually
+   matched (`cv:auto` on a real flow item) and reports one console line — `info` when
+   healthy, `warn` when an app update has renamed the classes the selectors rely on.
+   The same status object is kept on `window.__dshTranscriptTurbo` for inspection.
+5. **Configuration switches.** The bundle's detail page in Plugin Manager carries three
+   switches — transcript containment, spinner quieting, shimmer freezing
+   (`containment` / `spinnerQuiet` / `shimmerFreeze`). Flip one and it applies
+   immediately; nothing needs restarting.
 
 ## Measured (dsh-desktop 0.2.2-rc.5, Chromium 152, 2560×1440@155 Hz)
 
@@ -45,12 +46,12 @@ A. **Idle, mixed transcript (300+ messages, no formulas):**
 
 No regression: typing queue ~3 ms / paint ~5.5 ms; scroll p50 6.5 ms, no frame > 16 ms.
 
-B. **Live A/B on a real formula-heavy session** (「数学」: 3,361 rendered KaTeX elements,
-full-transcript height 158,655 px ≈ 126 viewports, plugin style toggled via DevTools):
+B. **Live A/B on a real formula-heavy session** (3,361 rendered KaTeX elements,
+full-transcript height 158,655 px ≈ 126 viewports, plugin toggled on and off in place):
 
 | metric | plugin ON | plugin OFF |
 |---|---|---|
-| idle main-thread busy | 29% (all whale, see below) | **105% (saturates one core)** |
+| idle main-thread busy | 29% (one third-party widget's animation, see limits) | **105% (saturates one core)** |
 | idle layout / style recalcs | 1 / 18 per s | 45.8 / 45.8 per s |
 | mount long-frame sum | **747 ms** | 3,502 ms (worst single frame 1,415 ms) |
 | full-scroll frame p50 | **7 ms** | 31 ms — 261/261 frames over 16 ms |
@@ -59,17 +60,16 @@ full-transcript height 158,655 px ≈ 126 viewports, plugin style toggled via De
 Compounding effect observed: without containment, the app's own spinner animations
 recalculate style over the entire un-contained tree, so their cost scales with transcript
 complexity — 26% on the mixed transcript, 105% on the formula one. Containment collapses
-both to ~1–2% + whale. Full methodology in `docs/performance-notes.md`.
+both to ~1–2%, on top of whatever other plugins animate. Full methodology in
+`docs/performance-notes.md`.
 
 ## Honest limits
 
-- **Whale widget not covered (user decision 2026-11-19):** dsh-whale-widget's rainbow
-  text rows animate `background-position` every frame and measured at a constant
-  **~27% of one core** whenever a rainbow row is visible. It is a visible skin of a
-  third-party plugin and the user chose to keep it, so this bundle deliberately does not
-  touch it. Idle cost with the plugin on is therefore ~29% (whale + quieted indicator) instead
-  of ~2% whenever rainbow rows are showing; every other metric in the table above is
-  unaffected.
+- **Other plugins' animations are not covered.** A third-party widget in this setup
+  animates `background-position` every frame and measured at a constant **~27% of one
+  core** whenever its animated row is on screen. This bundle deliberately never touches
+  another plugin's visuals, so idle cost stays ~29% instead of ~2% while such an
+  animation is visible; every other metric in the tables above is unaffected.
 - Chrome forces layout on find-in-page and printing when needed; scrolling materializes
   block sizes progressively, so the scrollbar estimate converges from ~240 px/block to real
   heights. On first open of a 158 k-px session the scrollbar starts at ~18% of its final
@@ -78,35 +78,36 @@ both to ~1–2% + whale. Full methodology in `docs/performance-notes.md`.
   (observed 1,354 → 3,361 KaTeX during a full sweep with the plugin ON and OFF alike);
   first-reveal of a freshly mounted formula batch can still produce a single 100–600 ms
   frame in both modes.
-- **Formula/CSS loading is already optimal — measured, not guessed** (v0.2.0 round):
-  both app stylesheets and all 20 KaTeX fonts are local `dsh-app://` assets fetched at
+- **Formula/CSS loading is already optimal — measured, not guessed:** both app
+  stylesheets and all 20 KaTeX fonts are local `dsh-app://` assets fetched at
   startup (0 ms, fonts loaded at t≈64 ms before any formula exists), so there is nothing
   to preload or accelerate. The residual mount spike is **layout, not KaTeX JS**
   (measured 1,242 ms layout vs 72 ms script across the mount window with the plugin ON) —
   the irreducible cost of first-laying-out visible formula spans, which CSS cannot shrink
   further; containment already removed everything offscreen (mount LoAF 3,502 → ~750 ms).
-- **Extreme DOM accumulation outruns any CSS** (2026-11-20 round): the app never unmounts
+- **Extreme DOM accumulation outruns any CSS:** the app never unmounts
   blocks you scrolled past *within one session visit*; one heavy visit was measured at
   274,555 live DOM nodes, where animation-driven frame bookkeeping alone burns ~90–100% of
   a core with the plugin ON or OFF (frozen animations: 4%). **Switching sessions unmounts
   the previous transcript** (274k → 11.5k nodes measured) and a reload does the same, so
   the fix for a sluggish long-session browse is to switch away and back — fresh state
   re-measured at idle 2%, scroll p50 7 ms.
-- **Far-offscreen hibernation was tried and removed — it doesn't work** (v0.3.x round,
-  2026-11-20): freezing far-past blocks into height-preserving `display:none` shells
+- **Far-offscreen hibernation was tried and removed — it doesn't work:** freezing
+  far-past blocks into height-preserving `display:none` shells
   (245 of 381 blocks verified hidden) changed idle busy 48% vs 47% against a frame-rate
   forcing animation, and the paint-lifecycle trace was identical (1,490 vs 1,553 ms per
   6 s). The per-frame walk that scales with mounted DOM is immune to both
-  `content-visibility` and `display:none`; only stopping animations (rule B does this for
-  the app's own spinners) or unmounting (switch/reload) reduces it. Data:
+  `content-visibility` and `display:none`; only stopping animations (the spinner-quieting
+  switch does this for the app's own spinners) or unmounting (switch/reload) reduces it. Data:
   `docs/performance-notes.md` §9.
 
 ## Install
 
-Plugin Manager → Add plugin → local directory `dsh-transcript-turbo/`, or
+Point Plugin Manager's Add-plugin at the local directory `dsh-transcript-turbo/`, or
+install from GitHub:
 
 ```
-dsh plugin --profile desktop install <path-to>/dsh-transcript-turbo
+dsh plugin --profile desktop add github:ALICExhcm/dsh-transcript-turbo
 ```
 
 Requires dsh `>=0.2.1-rc.5`. After installing, open the bundle's detail page in

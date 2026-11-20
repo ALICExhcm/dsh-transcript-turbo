@@ -88,7 +88,7 @@ window.__ModuleLoader__.load({
     const FORM_LOCALE = {
       en: {
         summary: 'Render-acceleration toggles: offscreen containment, idle spinner quieting, shimmer freeze. Applies instantly.',
-        formDescription: 'Toggles apply instantly (volatile config — no restart needed).',
+        formDescription: 'Toggles apply instantly — no restart needed.',
         containmentLabel: 'Offscreen containment',
         containmentHint: 'Offscreen message blocks skip style/layout/paint (content-visibility). The main win on long transcripts.',
         spinnerQuietLabel: 'Quiet idle spinners',
@@ -98,7 +98,7 @@ window.__ModuleLoader__.load({
       },
       zh: {
         summary: '渲染加速开关：视口外包含、空闲动画降噪、微光冻结。即时生效。',
-        formDescription: '开关即时生效（volatile 配置，无需重启）。',
+        formDescription: '开关即时生效，无需重启。',
         containmentLabel: '视口外包含',
         containmentHint: '滚到附近才让消息块参与样式/布局/绘制（content-visibility）。长转录的主要收益来源。',
         spinnerQuietLabel: '空闲状态动画降噪',
