@@ -45,7 +45,7 @@ window.__ModuleLoader__.load({
     // ---- CSS rule groups (see docs/performance-notes.md for measurements) ----
     /* A. Long-transcript containment: offscreen message blocks and tool rows
        skip style / layout / paint entirely. First-open cost and every
-       document-wide style recalc then scale with the visible viewport
+       document-wide style recalc then scale with the visible area
        instead of transcript length. contain-intrinsic-size:auto remembers
        each block's real height once rendered, so the scrollbar estimate
        converges as you scroll. */
@@ -97,14 +97,14 @@ window.__ModuleLoader__.load({
         shimmerFreezeHint: 'Stop translate animations on tool rows; they run at frame rate even when offscreen.',
       },
       zh: {
-        summary: '渲染加速开关：视口外包含、空闲动画降噪、微光冻结。即时生效。',
+        summary: '渲染加速开关：屏幕外消息跳过、空闲动画降噪、微光冻结。即时生效。',
         formDescription: '开关即时生效，无需重启。',
-        containmentLabel: '视口外包含',
-        containmentHint: '滚到附近才让消息块参与样式/布局/绘制（content-visibility）。长转录的主要收益来源。',
+        containmentLabel: '屏幕外消息跳过渲染',
+        containmentHint: '当前看不见的消息块不参与样式/布局/绘制；滚回时自动恢复完整内容。长对话的主要收益来源。',
         spinnerQuietLabel: '空闲状态动画降噪',
         spinnerQuietHint: '停掉逐帧重绘整个转录区的状态点加载动画。空闲 CPU 约 26% → 约 1%。',
         shimmerFreezeLabel: '冻结工具行微光',
-        shimmerFreezeHint: '停掉工具行的平移动画（滚出视口后仍会以帧率运行）。',
+        shimmerFreezeHint: '停掉工具行的平移动画（滚出屏幕后仍会以帧率运行）。',
       },
     };
 

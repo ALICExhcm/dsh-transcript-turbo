@@ -6,7 +6,7 @@ and idle loading animations stop repainting every frame. Everything is one injec
 stylesheet — no timers, no listeners, no React — and disabling the plugin removes it
 completely.
 
-> **中文**：让超长、含大量公式的对话保持流畅。视口外的消息块不再参与样式重算与布局，
+> **中文**：让超长、含大量公式的对话保持流畅。屏幕外的消息块不再参与样式重算与布局，
 > 空闲状态的加载动画不再逐帧重绘。实测空闲主线程 26–105% → 1–2%，打字与滚动无回归。
 > 三个开关在「插件 → 转录加速」详情页，改了即时生效。只注入纯 CSS，停用即完全移除，
 > 不改动其他插件的外观。
@@ -15,8 +15,8 @@ completely.
 
 1. **Transcript containment.** Message blocks (`_flowItem`) and tool rows (`BE0jCW_root`)
    inside the transcript scroll container get `content-visibility:auto` with a remembered
-   intrinsic size. Blocks scrolled away from the viewport stop participating in style
-   recalculation, layout, and paint. Cost scales with the visible viewport instead of
+   intrinsic size. Blocks scrolled offscreen stop participating in style
+   recalculation, layout, and paint. Cost scales with what is actually on screen instead of
    transcript length — the difference grows with message count, long code blocks, and
    dense KaTeX formula sets.
 2. **Spinner quieting.** The app's status-dot spinners animate an SVG `transform` and
@@ -47,7 +47,7 @@ A. **Idle, mixed transcript (300+ messages, no formulas):**
 No regression: typing queue ~3 ms / paint ~5.5 ms; scroll p50 6.5 ms, no frame > 16 ms.
 
 B. **Live A/B on a real formula-heavy session** (3,361 rendered KaTeX elements,
-full-transcript height 158,655 px ≈ 126 viewports, plugin toggled on and off in place):
+full-transcript height 158,655 px ≈ 126 screens, plugin toggled on and off in place):
 
 | metric | plugin ON | plugin OFF |
 |---|---|---|
