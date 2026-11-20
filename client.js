@@ -1,15 +1,15 @@
 // dsh-transcript-turbo — client module.
 //
-// v0.5.0: every rule group is now a live preference, editable from Plugin
+// v0.5.1: removed the opt-in whale-rainbow rule and switch at the owner's
+// request — the widget's look stays exactly as its own plugin ships it.
+//
+// v0.5.0: every rule group is a live preference, editable from Plugin
 // Manager (the bundle page and the row's Configure control both render the
 // same form; toggles write through the revisioned volatile-config channel
 // and re-render the stylesheet in place, no restart). Defaults match v0.4.0
 // behavior, and the full-default CSS is injected before the config mirror
 // answers, so a slow or missing settings service can only ever delay
-// personalization, never the acceleration. New opt-in rule D: quiet the
-// dsh-whale-widget rainbow (default off — the rainbow is part of that
-// widget's look; its background-position animation costs ~13% of one core
-// and grows with mounted transcript size).
+// personalization, never the acceleration.
 //
 // v0.4.0 notes retained: the v0.3.x far-offscreen hibernation (freeze
 // blocks past a 5000px margin into height-preserving display:none shells)
@@ -33,14 +33,14 @@
 window.__ModuleLoader__.load({
   id: 'dsh-transcript-turbo',
   factory(require) {
-    const VERSION = '0.5.0';
+    const VERSION = '0.5.1';
     const NS = 'dsh-transcript-turbo';          // locale namespace
     const ROW_NS = 'transcript-turbo';           // settings/config form namespace (row id)
     const PKG = 'dsh-transcript-turbo';          // bundle package name
     const SLOT_BUNDLE_KEY = PKG;                 // plugins.bundle.config is keyed by package name
     const SLOT_ROW_KEY = PKG + '#' + ROW_NS;     // plugins.row.config is keyed by <package>#<row id>
-    const FIELDS = ['containment', 'spinnerQuiet', 'shimmerFreeze', 'whaleRainbow'];
-    const DEFAULTS = { containment: true, spinnerQuiet: true, shimmerFreeze: true, whaleRainbow: false };
+    const FIELDS = ['containment', 'spinnerQuiet', 'shimmerFreeze'];
+    const DEFAULTS = { containment: true, spinnerQuiet: true, shimmerFreeze: true };
 
     // ---- CSS rule groups (see docs/performance-notes.md for measurements) ----
     /* A. Long-transcript containment: offscreen message blocks and tool rows
@@ -68,13 +68,6 @@ window.__ModuleLoader__.load({
        its static highlight. */
     const CSS_C = 'span[class*="_sweep_"], span[class*="_highlight_"]{animation:none !important;transform:none !important}';
 
-    /* D. Optional whale-rainbow quieting (opt-in): the dsh-whale-widget
-       balance bar animates background-position continuously; on an idle UI
-       that costs ~13% of one core, and inside a heavily accumulated
-       transcript (hundreds of thousands of mounted nodes) the per-frame
-       document walk it drives can approach a full core. Off by default. */
-    const CSS_D = 'div[class^="dshwv-"], span[class^="dshwv-"]{animation:none !important}';
-
     // Minimal chrome for the Plugin Manager form (own class prefix).
     const CSS_FORM = '.dsh-tt-form{display:flex;flex-direction:column;gap:14px;max-width:600px;margin:8px 0 4px}\n'
       + '.dsh-tt-formIntro{margin:0;font-size:12.5px;opacity:.75}\n'
@@ -88,14 +81,13 @@ window.__ModuleLoader__.load({
       if (p.containment) parts.push(CSS_A);
       if (p.spinnerQuiet) parts.push(CSS_B);
       if (p.shimmerFreeze) parts.push(CSS_C);
-      if (p.whaleRainbow) parts.push(CSS_D);
       return parts.join('\n\n');
     }
 
     // ---- Plugin Manager form strings (registered under NS at apply time) ----
     const FORM_LOCALE = {
       en: {
-        summary: 'Render-acceleration toggles: offscreen containment, idle spinner quieting, shimmer freeze, whale-rainbow override. Applies instantly.',
+        summary: 'Render-acceleration toggles: offscreen containment, idle spinner quieting, shimmer freeze. Applies instantly.',
         formDescription: 'Toggles apply instantly (volatile config — no restart needed).',
         containmentLabel: 'Offscreen containment',
         containmentHint: 'Offscreen message blocks skip style/layout/paint (content-visibility). The main win on long transcripts.',
@@ -103,11 +95,9 @@ window.__ModuleLoader__.load({
         spinnerQuietHint: 'Replace the per-frame SVG state-dot animation with a compositor-only opacity pulse. Idle CPU ~26% -> ~1%.',
         shimmerFreezeLabel: 'Freeze running-row shimmer',
         shimmerFreezeHint: 'Stop translate animations on tool rows; they run at frame rate even when offscreen.',
-        whaleRainbowLabel: 'Also quiet the whale-widget rainbow',
-        whaleRainbowHint: 'Off by default — the rainbow is part of that widget\'s look. Its background-position animation costs ~13% of one core and grows with transcript size. Turn on if you don\'t mind a static bar.',
       },
       zh: {
-        summary: '渲染加速开关：视口外包含、空闲动画降噪、微光冻结、鲸鱼彩虹覆盖。即时生效。',
+        summary: '渲染加速开关：视口外包含、空闲动画降噪、微光冻结。即时生效。',
         formDescription: '开关即时生效（volatile 配置，无需重启）。',
         containmentLabel: '视口外包含',
         containmentHint: '滚到附近才让消息块参与样式/布局/绘制（content-visibility）。长转录的主要收益来源。',
@@ -115,8 +105,6 @@ window.__ModuleLoader__.load({
         spinnerQuietHint: '把逐帧改写 SVG 的状态点动画换成合成器呼吸闪烁。空闲 CPU 约 26% → 约 1%。',
         shimmerFreezeLabel: '冻结工具行微光',
         shimmerFreezeHint: '停掉工具行的平移动画（滚出视口后仍会以帧率运行）。',
-        whaleRainbowLabel: '同时降噪鲸鱼插件彩虹条',
-        whaleRainbowHint: '默认关闭——彩虹是那个插件外观的一部分。它的背景位移动画约占一核 13%，并随转录增大而放大。不介意静态条的话可以打开。',
       },
     };
 
@@ -126,7 +114,6 @@ window.__ModuleLoader__.load({
         containment: value.containment !== false,
         spinnerQuiet: value.spinnerQuiet !== false,
         shimmerFreeze: value.shimmerFreeze !== false,
-        whaleRainbow: value.whaleRainbow === true,
       };
     }
 
@@ -217,7 +204,7 @@ window.__ModuleLoader__.load({
 
           // Stylesheet: full defaults immediately, personalized when the
           // config mirror answers. A missing settings service degrades to
-          // v0.4.0 behavior (everything on except whale).
+          // v0.4.0 behavior (everything on).
           const style = document.createElement('style');
           style.id = 'dsh-transcript-turbo-style';
           style.textContent = buildCss(DEFAULTS);

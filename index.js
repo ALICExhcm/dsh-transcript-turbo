@@ -22,10 +22,6 @@ const PrefsSchema = z.object({
   spinnerQuiet: z.boolean().default(true),
   // C. Freeze running-row shimmer animations. Default on.
   shimmerFreeze: z.boolean().default(true),
-  // D. Also quiet the dsh-whale-widget rainbow bar. OFF by default: the
-  //    rainbow is part of that widget's look and its owner wants it kept;
-  //    this switch exists for users who prefer a static bar.
-  whaleRainbow: z.boolean().default(false),
 });
 
 const volatilePrefs = Object.fromEntries(

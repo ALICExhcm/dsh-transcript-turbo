@@ -1,15 +1,12 @@
 # dsh-transcript-turbo
 
-![Preview](docs/preview.svg)
-
 Render acceleration for long, formula-heavy conversations in the DeepSeek Harness web UI.
 Client-only bundle: injects one passive stylesheet, nothing else — no timers, no listeners,
 no React, no slots. Disable the plugin in Plugin Manager to remove it completely.
 
 > **中文**：让超长、含大量公式的对话保持流畅。视口外的消息块不再参与样式重算与布局，
-> 状态点动画换成近零开销的呼吸闪烁。实测空闲主线程 26–105% → 1–2%。四个开关在
-> 「插件 → 转录加速」详情页，改了即时生效；不碰你的皮肤（鲸鱼彩虹条降噪为可选开关，
-> 默认关闭）。
+> 状态点动画换成近零开销的呼吸闪烁。实测空闲主线程 26–105% → 1–2%。三个开关在
+> 「插件 → 转录加速」详情页，改了即时生效。不碰其他插件的外观（鲸鱼彩虹条保持原样）。
 
 ## What it does
 
@@ -30,9 +27,8 @@ no React, no slots. Disable the plugin in Plugin Manager to remove it completely
    `info` when healthy, `warn` when an app update has renamed the classes the selectors
    rely on. The same object is kept on `window.__dshTranscriptTurbo` for probing.
 5. **Configuration switches (v0.5.0).** The bundle's row in Plugin Manager carries a
-   configuration form with four volatile switches — they apply instantly, without
-   restarting anything: `containment`, `spinnerQuiet`, `shimmerFreeze`, and an
-   opt-in `whaleRainbow` (see Honest limits).
+   configuration form with three volatile switches — they apply instantly, without
+   restarting anything: `containment`, `spinnerQuiet`, `shimmerFreeze`.
 
 ## Measured (dsh-desktop 0.2.2-rc.5, Chromium 152, 2560×1440@155 Hz)
 
@@ -64,13 +60,13 @@ both to ~1–2% + whale. Full methodology in `docs/performance-notes.md`.
 
 ## Honest limits
 
-- **Whale widget: opt-in switch (v0.5.0, user decision 2026-11-19):** dsh-whale-widget's
-  rainbow text rows animate `background-position` every frame and measured at a constant
+- **Whale widget not covered (user decision 2026-11-19):** dsh-whale-widget's rainbow
+  text rows animate `background-position` every frame and measured at a constant
   **~27% of one core** whenever a rainbow row is visible. It is a visible skin of a
-  third-party plugin and the user chose to keep it untouched — so the quieting rule for it
-  ships **off by default** behind the `whaleRainbow` switch on the plugin's configuration
-  form. Idle cost with defaults is therefore ~29% (whale + tiny pulse) instead of ~2%
-  whenever rainbow rows are showing; every other metric in the table above is unaffected.
+  third-party plugin and the user chose to keep it, so this bundle deliberately does not
+  touch it. Idle cost with the plugin on is therefore ~29% (whale + tiny pulse) instead
+  of ~2% whenever rainbow rows are showing; every other metric in the table above is
+  unaffected.
 - Chrome forces layout on find-in-page and printing when needed; scrolling materializes
   block sizes progressively, so the scrollbar estimate converges from ~240 px/block to real
   heights. On first open of a 158 k-px session the scrollbar starts at ~18% of its final
