@@ -3,9 +3,14 @@
   "version": "0.5.1",
   "description": "Render acceleration for long formula-heavy transcripts in the DSH web UI: offscreen message blocks skip style/layout/paint, and per-frame SVG spinner animations are replaced with a near-zero-cost opacity pulse.",
   "type": "module",
+  "author": "ALICExhcm",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/REPLACE-WITH-YOUR-GITHUB-USERNAME/dsh-transcript-turbo.git"
+    "url": "git+https://github.com/ALICExhcm/dsh-transcript-turbo.git"
+  },
+  "homepage": "https://github.com/ALICExhcm/dsh-transcript-turbo#readme",
+  "bugs": {
+    "url": "https://github.com/ALICExhcm/dsh-transcript-turbo/issues"
   },
   "keywords": [
     "deepseek",
