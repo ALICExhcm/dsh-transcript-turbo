@@ -1,0 +1,4 @@
+# Local dev only: resolution junctions for link-installed packages.
+# (Market/git installs place this package inside the profile's node_modules,
+# where @deepseek-ai/schemastery already resolves naturally.)
+node_modules/

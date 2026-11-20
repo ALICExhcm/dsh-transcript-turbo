@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 260" width="520" height="260" role="img">
+  <rect x="8" y="8" width="504" height="244" rx="18" fill="#0f172a"/>
+  <rect x="8" y="8" width="504" height="34" rx="17" fill="#1e293b"/>
+  <circle cx="30" cy="25" r="5" fill="#f87171"/>
+  <circle cx="48" cy="25" r="5" fill="#fbbf24"/>
+  <circle cx="66" cy="25" r="5" fill="#34d399"/>
+  <text x="90" y="30" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#94a3b8">Transcript Turbo</text>
+
+  <text x="34" y="86" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#e2e8f0">idle CPU</text>
+  <rect x="34" y="98" width="200" height="26" rx="6" fill="#1e293b"/>
+  <rect x="34" y="98" width="196" height="26" rx="6" fill="#f87171"/>
+  <text x="244" y="117" font-family="ui-monospace, monospace" font-size="15" fill="#f87171">105%</text>
+
+  <path d="M256 111 l14 -9 v6 h10 l-16 12 v-7 z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <rect x="300" y="98" width="30" height="26" rx="6" fill="#4ade80"/>
+  <text x="342" y="117" font-family="ui-monospace, monospace" font-size="15" fill="#4ade80">2%</text>
+
+  <text x="34" y="166" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#e2e8f0">layout / s</text>
+  <rect x="34" y="178" width="200" height="26" rx="6" fill="#1e293b"/>
+  <rect x="34" y="178" width="196" height="26" rx="6" fill="#fb923c"/>
+  <text x="244" y="197" font-family="ui-monospace, monospace" font-size="15" fill="#fb923c">155</text>
+
+  <path d="M256 191 l14 -9 v6 h10 l-16 12 v-7 z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <rect x="300" y="178" width="8" height="26" rx="4" fill="#4ade80"/>
+  <text x="320" y="197" font-family="ui-monospace, monospace" font-size="15" fill="#4ade80">1</text>
+
+  <g transform="translate(410,66)">
+    <rect x="0" y="0" width="84" height="150" rx="10" fill="#1e293b"/>
+    <rect x="10" y="12" width="64" height="10" rx="3" fill="#334155"/>
+    <text x="42" y="46" font-family="serif" font-size="16" fill="#7dd3fc">∫ ∑</text>
+    <rect x="10" y="58" width="64" height="10" rx="3" fill="#334155"/>
+    <text x="42" y="88" font-family="serif" font-size="16" fill="#a5b4fc">√π ∂</text>
+    <rect x="10" y="100" width="64" height="10" rx="3" fill="#334155"/>
+    <rect x="10" y="122" width="46" height="10" rx="3" fill="#fbbf24" opacity="0.85"/>
+    <path d="M64 138 l-10 6 v-4 h-7 l11 -8 v5 z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+</svg>
