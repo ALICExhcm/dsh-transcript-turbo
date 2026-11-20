@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Transcript Turbo",
-    "description": "Keeps long, formula-heavy conversations smooth. Offscreen message blocks skip re-layout and painting (content-visibility), and the per-frame SVG state-dot spinners become a near-zero-cost compositor pulse. Measured on a 300+ message, 2900+ formula session: idle main-thread 26-105% down to 1-2%, layout recalcs 155/s down to ~1/s, mount long-frame 3502ms to 747ms, with no typing or scroll regression. Three instantly-applied switches on the plugin page. Pure injected CSS: no timers, no listeners; disabling the plugin removes everything. Other plugins' skins are never touched. If an extreme session slows after scrolling it whole, switching sessions or reloading restores full speed."
+    "description": "Keeps long, formula-heavy conversations smooth: offscreen message blocks stop participating in style recalculation and layout, and idle loading animations stop repainting every frame. Measured on a 300+ message, 2900+ formula session: idle main-thread 26-105% down to 1-2%, layout recalcs 155/s down to ~1/s, no typing or scroll regression. Three switches on the plugin detail page apply instantly; one injected stylesheet only — no timers, no listeners — fully removed when disabled, and other plugins' appearance is untouched."
   }
 }

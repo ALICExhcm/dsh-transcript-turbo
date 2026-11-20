@@ -1,7 +1,7 @@
 {
   "name": "dsh-transcript-turbo",
   "version": "0.5.1",
-  "description": "Render acceleration for long formula-heavy transcripts in the DSH web UI: offscreen message blocks skip style/layout/paint, and per-frame SVG spinner animations are replaced with a near-zero-cost opacity pulse.",
+  "description": "Render acceleration for long, formula-heavy transcripts in the DSH web UI: offscreen message blocks skip style recalculation, layout and painting, and idle loading animations stop repainting every frame.",
   "type": "module",
   "author": "ALICExhcm",
   "repository": {

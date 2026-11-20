@@ -1,12 +1,15 @@
 # dsh-transcript-turbo
 
 Render acceleration for long, formula-heavy conversations in the DeepSeek Harness web UI.
-Client-only bundle: injects one passive stylesheet, nothing else — no timers, no listeners,
-no React, no slots. Disable the plugin in Plugin Manager to remove it completely.
+Offscreen message blocks stop participating in style recalculation, layout and painting,
+and idle loading animations stop repainting every frame. Everything is one injected
+stylesheet — no timers, no listeners, no React — and disabling the plugin removes it
+completely.
 
 > **中文**：让超长、含大量公式的对话保持流畅。视口外的消息块不再参与样式重算与布局，
-> 状态点动画换成近零开销的呼吸闪烁。实测空闲主线程 26–105% → 1–2%。三个开关在
-> 「插件 → 转录加速」详情页，改了即时生效。不碰其他插件的外观（鲸鱼彩虹条保持原样）。
+> 空闲状态的加载动画不再逐帧重绘。实测空闲主线程 26–105% → 1–2%，打字与滚动无回归。
+> 三个开关在「插件 → 转录加速」详情页，改了即时生效。只注入纯 CSS，停用即完全移除，
+> 不改动其他插件的外观。
 
 ## What it does
 
@@ -18,8 +21,8 @@ no React, no slots. Disable the plugin in Plugin Manager to remove it completely
    dense KaTeX formula sets.
 2. **Spinner quieting.** The app's status-dot spinners animate an SVG `transform` and
    `stroke-dash` every frame. On a 155 Hz display that forces ~155 style recalcs + layouts
-   per second *while completely idle*. The plugin freezes the SVG parts and swaps in a
-   compositor-only opacity pulse on the wrapper — the "working…" signal stays visible.
+   per second *while completely idle*. The plugin freezes those animations; the
+   "working…" signal stays visible at a fraction of the cost.
 3. **Shimmer freezing.** Tool-row shimmer sweeps (`translate` keyframes) keep running at
    frame rate even when scrolled offscreen. They become a static highlight.
 4. **Self-check (v0.2.0).** Three seconds after load the module verifies its own rules
@@ -38,7 +41,7 @@ A. **Idle, mixed transcript (300+ messages, no formulas):**
 |---|---|---|
 | main-thread busy | 26–29% of one core | **1–2%** |
 | layout count | 155/s | **~1/s** |
-| style recalcs | 155/s | **~19/s** (opacity pulse only) |
+| style recalcs | 155/s | **~19/s** |
 
 No regression: typing queue ~3 ms / paint ~5.5 ms; scroll p50 6.5 ms, no frame > 16 ms.
 
@@ -64,7 +67,7 @@ both to ~1–2% + whale. Full methodology in `docs/performance-notes.md`.
   text rows animate `background-position` every frame and measured at a constant
   **~27% of one core** whenever a rainbow row is visible. It is a visible skin of a
   third-party plugin and the user chose to keep it, so this bundle deliberately does not
-  touch it. Idle cost with the plugin on is therefore ~29% (whale + tiny pulse) instead
+  touch it. Idle cost with the plugin on is therefore ~29% (whale + quieted indicator) instead
   of ~2% whenever rainbow rows are showing; every other metric in the table above is
   unaffected.
 - Chrome forces layout on find-in-page and printing when needed; scrolling materializes
@@ -107,4 +110,4 @@ dsh plugin --profile desktop install <path-to>/dsh-transcript-turbo
 ```
 
 Requires dsh `>=0.2.1-rc.5`. After installing, open the bundle's detail page in
-Plugin Manager for the four configuration switches — they take effect immediately.
+Plugin Manager for the three configuration switches — they take effect immediately.
